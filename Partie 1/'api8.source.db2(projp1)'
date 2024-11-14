@@ -1,0 +1,177 @@
+000100 IDENTIFICATION DIVISION.                                         00010064
+000200 PROGRAM-ID. PROJP1.                                              00020099
+000300                                                                  00030064
+000400 ENVIRONMENT DIVISION.                                            00040064
+000500 CONFIGURATION SECTION.                                           00050064
+000800                                                                  00080064
+000810 INPUT-OUTPUT SECTION.                                            00081064
+000820 FILE-CONTROL.                                                    00082064
+000830      SELECT PROD ASSIGN TO NEWPRODS.                             00083064
+000850                                                                  00085064
+000860 DATA DIVISION.                                                   00086064
+000870 FILE SECTION.                                                    00087064
+000880 FD PROD.                                                         00088064
+000980 01 ENR-PROD.                                                     00098064
+000990    05 LIGNE-PROD PIC X(45).                                      00099064
+000998                                                                  00099864
+001004 WORKING-STORAGE SECTION.                                         00100499
+001010     EXEC SQL                                                     00101099
+001100         INCLUDE SQLCA                                            00110064
+001200     END-EXEC.                                                    00120064
+001300                                                                  00130064
+001400     EXEC SQL                                                     00140064
+001500        INCLUDE PRODUCT                                           00150099
+001600     END-EXEC.                                                    00160064
+001700                                                                  00170064
+001810 77 PROD-FLAG  PIC 9 VALUE 0.                                     00181064
+001820 77 WS-ANO     PIC 9 VALUE 0.                                     00182064
+001830 77 WS-VAR     PIC 9 VALUE 0.                                     00183064
+001840 77 MSG        PIC X(20).                                         00184064
+001850 77 ACTUALCODE PIC X(20).                                         00185064
+001860                                                                  00186064
+001870 01 NEW-PROD.                                                     00187064
+001880    05 PNO        PIC X(3).                                       00188064
+001881    05 DESC       PIC X(30).                                      00188164
+001885    05 PRICE      PIC S9(3)V9(2) COMP-3.                          00188564
+001896 77 DEVISE        PIC X(2).                                       00189664
+001897                                                                  00189799
+001898 77 PRICE-ALPHA   PIC X(6).                                       00189899
+001906 77 PRICE-NUM     PIC 9(3)V9(2).                                  00190699
+001907                                                                  00190799
+001908 77 DESC-STR      PIC X(30).                                      00190899
+001909 77 DESC-INDEX    PIC 9(2) VALUE 1.                               00190999
+001910 77 DESC-NEW-W    PIC 9 VALUE 1.                                  00191099
+001911                                                                  00191199
+001912 77 SSPROG        PIC X(8) VALUE 'PROJP1SS'.                      00191299
+001913                                                                  00191399
+001914 PROCEDURE DIVISION.                                              00191499
+001916* OUVERTURE DU FICHIER DES NEW PRODUITS                           00191699
+001917     OPEN INPUT PROD                                              00191799
+001918* BOUCLE SUR TOUS LES NOUVEAUX PRODUITS                           00191899
+001919     PERFORM LECT-PROD                                            00191999
+001920     PERFORM UNTIL PROD-FLAG = 1                                  00192099
+001921* RECUPERATION DES INFORMATIONS PRODUIT                           00192199
+001922         PERFORM ANALYSE-LINE                                     00192299
+001923* AJOUT DU PRODUIT EN BDD                                         00192399
+001926         PERFORM INSERT-PROD                                      00192699
+001927                                                                  00192799
+001928         PERFORM LECT-PROD                                        00192864
+001929     END-PERFORM                                                  00192964
+001930                                                                  00193064
+001931     CLOSE PROD                                                   00193164
+001997     GOBACK.                                                      00199764
+001998                                                                  00199864
+002130 LECT-PROD.                                                       00213064
+002140     READ PROD AT END                                             00214064
+002150         MOVE 1 TO PROD-FLAG                                      00215064
+002151     END-READ.                                                    00215164
+002152                                                                  00215264
+002153 ANALYSE-LINE.                                                    00215364
+002157* RECUPERATION DES VARIABLES DANS LA LIGNE                        00215799
+002158     UNSTRING LIGNE-PROD DELIMITED BY ";"                         00215865
+002159         INTO PNO DESC-STR PRICE-ALPHA DEVISE                     00215999
+002160     END-UNSTRING                                                 00216065
+002161* MODIF DU FORMAT DU PRIX                                         00216199
+002162     COMPUTE PRICE-NUM = FUNCTION NUMVAL(PRICE-ALPHA)             00216299
+002193* MISE A JOUR DE PRICE VIA UN SOUS PRGM (CONVERSION)              00219399
+002194     CALL SSPROG USING BY REFERENCE PRICE-NUM                     00219499
+002195                       BY CONTENT DEVISE                          00219599
+002198     COMPUTE PRICE = PRICE-NUM                                    00219899
+002199* MODIF DE LA DESCRIPTION                                         00219999
+002200     PERFORM CHANGE-DESC-CASE                                     00220099
+002207     .                                                            00220799
+002210                                                                  00221099
+002220 CHANGE-DESC-CASE.                                                00222099
+002221     PERFORM VARYING DESC-INDEX FROM 1 BY 1 UNTIL DESC-INDEX > 30 00222199
+002222         IF DESC-STR(DESC-INDEX:1) = ' '                          00222299
+002223             MOVE 1 TO DESC-NEW-W                                 00222399
+002224             MOVE DESC-STR(DESC-INDEX:1) TO DESC(DESC-INDEX:1)    00222499
+002225         ELSE                                                     00222599
+002226             IF DESC-NEW-W = 1                                    00222699
+002227                 MOVE FUNCTION UPPER-CASE(DESC-STR(DESC-INDEX:1)) 00222799
+002228                      TO DESC(DESC-INDEX:1)                       00222899
+002229                 MOVE 0 TO DESC-NEW-W                             00222999
+002230             ELSE                                                 00223099
+002231                 MOVE FUNCTION LOWER-CASE(DESC-STR(DESC-INDEX:1)) 00223199
+002232                      TO DESC(DESC-INDEX:1)                       00223299
+002233             END-IF                                               00223399
+002234         END-IF                                                   00223499
+002235     END-PERFORM                                                  00223599
+002238     .                                                            00223899
+002240                                                                  00224099
+002241 INSERT-PROD.                                                     00224199
+002242     MOVE 'INSERT PROD : ' TO MSG                                 00224299
+002243     MOVE PNO              TO ACTUALCODE                          00224399
+002244     EXEC SQL                                                     00224499
+002245         INSERT INTO API8.PRODUCTS VALUES(                        00224599
+002246         :PNO,                                                    00224699
+002247         :DESC,                                                   00224799
+002248         :PRICE                                                   00224899
+002252         )                                                        00225299
+002253     END-EXEC                                                     00225399
+002254     PERFORM TEST-SQLCODE.                                        00225499
+002255                                                                  00225599
+002256 TEST-SQLCODE.                                                    00225699
+002257     EVALUATE TRUE                                                00225799
+002258        WHEN SQLCODE = ZERO                                       00225899
+002259            DISPLAY PNO ' AJOUTE'                                 00225999
+002260            CONTINUE                                              00226064
+002270        WHEN SQLCODE = -803                                       00227064
+002280            DISPLAY 'ERREUR : ' MSG ACTUALCODE                    00228064
+002290        WHEN SQLCODE = +100                                       00229064
+002300            DISPLAY 'ERREUR : ' MSG ACTUALCODE                    00230064
+002400        WHEN SQLCODE > ZERO                                       00240064
+002500             DISPLAY 'WARNING : ' SQLCODE                         00250064
+002600        WHEN OTHER                                                00260064
+002700             DISPLAY 'ANOMALIE GRAVE : ' SQLCODE                  00270064
+002800             PERFORM ABEND-PROG                                   00280064
+002900     END-EVALUATE.                                                00290064
+003000                                                                  00300064
+003100 ABEND-PROG.                                                      00310064
+003200     COMPUTE WS-ANO = WS-ANO / WS-VAR.                            00320064
+003210                                                                  00321099
+003300*ANALYSE-LINEOLD.                                                 00330099
+003400*    DISPLAY '----'                                               00340099
+003500*    MOVE "000" TO PRICE-INT                                      00350099
+003600*    MOVE "00" TO PRICE-DEC                                       00360099
+003700* RECUPERATION DES VARIABLES DANS LA LIGNE                        00370099
+003800*    UNSTRING LIGNE-PROD DELIMITED BY ";"                         00380099
+003900*        INTO PNO DESC PRICE-ALPHA DEVISE                         00390099
+004000*    END-UNSTRING                                                 00400099
+004100*    COMPUTE PRICE-NUM2 = FUNCTION NUMVAL(PRICE-ALPHA)            00410099
+004200*    DISPLAY 'BEFORE : ' PRICE-NUM2                               00420099
+004300*    DISPLAY 'PRIX ALPHA : ' PRICE-ALPHA                          00430099
+004400* SEPARATION DE LA PARTIE ENTIERE ET DECIMALE                     00440099
+004500*    UNSTRING PRICE-ALPHA DELIMITED BY "."                        00450099
+004600*        INTO PRICE-INT PRICE-DEC                                 00460099
+004700*    END-UNSTRING                                                 00470099
+004800* FORMATTAGE DE LA PARTIE DECIMALE                                00480099
+004900*    IF PRICE-DEC(2:1) = SPACE THEN                               00490099
+005000*        MOVE "0" TO PRICE-DEC(2:1)                               00500099
+005100*    END-IF                                                       00510099
+005200* FORMATTAGE DE LA PARTIE ENTIERE                                 00520099
+005300*    IF PRICE-INT(3:1) = SPACE THEN                               00530099
+005400*        MOVE 0 TO PRICE-INT-ED(1:1)                              00540099
+005500*        IF PRICE-INT(2:1) = SPACE THEN                           00550099
+005600*           MOVE 0 TO PRICE-INT-ED(2:1)                           00560099
+005700*           MOVE PRICE-INT TO PRICE-INT-ED(3:1)                   00570099
+005800*        ELSE                                                     00580099
+005900*           MOVE PRICE-INT TO PRICE-INT-ED(2:2)                   00590099
+006000*        END-IF                                                   00600099
+006100*    ELSE                                                         00610099
+006200*        MOVE PRICE-INT TO PRICE-INT-ED                           00620099
+006300*    END-IF                                                       00630099
+006400*    DISPLAY 'INT : ' PRICE-INT-ED                                00640099
+006500*    DISPLAY 'DEC : ' PRICE-DEC                                   00650099
+006600*                                                                 00660099
+006700*    MOVE PRICE-INT-ED TO PRICE-FORMAT(1:3)                       00670099
+006800*    MOVE PRICE-DEC TO PRICE-FORMAT(4:2)                          00680099
+006900*                                                                 00690099
+007000*    MOVE PRICE-FORMAT(1:3) TO PRICE-NUM(1:3)                     00700099
+007100*    MOVE PRICE-FORMAT(4:2) TO PRICE-NUM(4:2)                     00710099
+007200*                                                                 00720099
+007300*    DISPLAY 'PNO : ' PNO                                         00730099
+007400*    DISPLAY 'DESC: ' DESC                                        00740099
+007500*    DISPLAY 'PRIX FORMATTE : ' PRICE-FORMAT                      00750099
+007600*    DISPLAY 'PRICE-NUM : ' PRICE-NUM.                            00760099
+007700*    DISPLAY 'DEV : ' DEVISE.                                     00770099

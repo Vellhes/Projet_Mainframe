@@ -1,0 +1,55 @@
+000200 IDENTIFICATION DIVISION.                                         00020000
+000300 PROGRAM-ID. PROJP1SS.                                            00030000
+000400                                                                  00040000
+000500 ENVIRONMENT DIVISION.                                            00050000
+000600 CONFIGURATION SECTION.                                           00060000
+000900                                                                  00090000
+001000 INPUT-OUTPUT SECTION.                                            00100000
+001100 FILE-CONTROL.                                                    00110000
+001200      SELECT CHANGEK ASSIGN TO CHANGEK                            00120000
+001300      ORGANIZATION IS INDEXED                                     00130000
+001400      ACCESS MODE  IS RANDOM                                      00140000
+001410      RECORD KEY   IS DEVISEK                                     00141000
+001420      FILE STATUS  IS FS-CHANGEK.                                 00142000
+001450                                                                  00145000
+001500 DATA DIVISION.                                                   00150000
+001600 FILE SECTION.                                                    00160000
+001700 FD CHANGEK.                                                      00170000
+001800 01 ENR-CHANGEK.                                                  00180000
+001900    05 DEVISEK PIC X(2).                                          00190000
+002000    05 MULTK   PIC 9(2)V9(2).                                     00200000
+003600                                                                  00360000
+003700 WORKING-STORAGE SECTION.                                         00370000
+004800 77 WS-ANO     PIC 9 VALUE 0.                                     00480000
+004900 77 WS-VAR     PIC 9 VALUE 0.                                     00490000
+005000 77 MSG        PIC X(20).                                         00500000
+005100 77 ACTUALCODE PIC X(20).                                         00510000
+005110 77 FS-CHANGEK PIC 9(2).                                          00511000
+005200                                                                  00520000
+005300 LINKAGE SECTION.                                                 00530000
+005400 77 LS-PRICE-NUM PIC 9(3)V9(2).                                   00540000
+005500 77 LS-DEVISE    PIC X(2).                                        00550000
+007000                                                                  00700000
+007100 PROCEDURE DIVISION USING LS-PRICE-NUM LS-DEVISE.                 00710000
+007200     OPEN INPUT CHANGEK                                           00720000
+007300     IF FS-CHANGEK NOT EQUAL ZERO THEN                            00730000
+007310         DISPLAY 'ERR OPEN - FS-CHANGEK : ' FS-CHANGEK            00731000
+007311         PERFORM ABEND-PROG                                       00731100
+007320     END-IF                                                       00732000
+007330                                                                  00733000
+007340     MOVE LS-DEVISE TO DEVISEK                                    00734000
+007360     READ CHANGEK                                                 00736000
+007370     EVALUATE FS-CHANGEK                                          00737000
+007380         WHEN ZERO                                                00738000
+007382             COMPUTE LS-PRICE-NUM = LS-PRICE-NUM * MULTK          00738204
+007384         WHEN 23                                                  00738400
+007385             DISPLAY DEVISEK ' EST INTROUVABLE => 1'              00738504
+007387         WHEN OTHER                                               00738700
+007388             DISPLAY 'ERR READ FS-CHANGEK : ' FS-CHANGEK          00738800
+007389             PERFORM ABEND-PROG                                   00738900
+007390     END-EVALUATE                                                 00739000
+007400     CLOSE CHANGEK                                                00740003
+010800     GOBACK.                                                      01080000
+010900                                                                  01090000
+018500 ABEND-PROG.                                                      01850000
+018600     COMPUTE WS-ANO = WS-ANO / WS-VAR.                            01860000
