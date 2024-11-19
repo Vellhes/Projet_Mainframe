@@ -1,0 +1,57 @@
+000100 IDENTIFICATION DIVISION.                                         00010000
+000200 PROGRAM-ID. STATE.                                               00020001
+000300*****************************************                         00030000
+000400 ENVIRONMENT DIVISION.                                            00040000
+000500 CONFIGURATION SECTION.                                           00050000
+000600 SPECIAL-NAMES.                                                   00060000
+000700     DECIMAL-POINT IS COMMA.                                      00070000
+000710                                                                  00071000
+000711 INPUT-OUTPUT SECTION.                                            00071101
+000712 FILE-CONTROL.                                                    00071201
+000713       SELECT STK ASSIGN TO STATEK                                00071301
+000714       ORGANIZATION IS INDEXED                                    00071401
+000715       ACCESS MODE IS RANDOM                                      00071501
+000716       RECORD KEY IS CODE-STK                                     00071601
+000717       FILE STATUS IS FS-STK.                                     00071701
+000718***************************************************               00071801
+000725 DATA DIVISION.                                                   00072501
+000726 FILE SECTION.                                                    00072601
+000727 FD STK.                                                          00072701
+000728 01 ENR-STK.                                                      00072801
+000729    05 CODE-STK  PIC X(2).                                        00072901
+000730    05 STATE-STK PIC X(20).                                       00073001
+000731                                                                  00073101
+000732 WORKING-STORAGE SECTION.                                         00073200
+000733 77 FS-STK       PIC 99.                                          00073301
+000734                                                                  00073401
+000735 77 WS-ANO       PIC 99.                                          00073501
+000736 77 WS-VAR       PIC 9 VALUE ZERO.                                00073601
+000737                                                                  00073701
+000772                                                                  00077200
+000773 LINKAGE SECTION.                                                 00077300
+000779 77 LS-ABV     PIC X(2).                                          00077902
+000780 77 LS-STATE   PIC X(20).                                         00078002
+000781                                                                  00078100
+000782 PROCEDURE DIVISION USING LS-ABV LS-STATE.                        00078202
+000783                                                                  00078301
+000784     OPEN INPUT STK                                               00078401
+000785     IF FS-STK NOT EQUAL ZERO                                     00078501
+000786           DISPLAY ' ERR OPEN STK : ' FS-STK                      00078601
+000787     END-IF                                                       00078701
+000788                                                                  00078801
+000789     MOVE LS-ABV TO CODE-STK                                      00078902
+000790     READ STK                                                     00079001
+000791                                                                  00079101
+000800     EVALUATE FS-STK                                              00080001
+000900              WHEN ZERO                                           00090001
+001010                   MOVE STATE-STK TO LS-STATE                     00101002
+001100              WHEN 23                                             00110001
+001200                   DISPLAY ' KEY NOT FOUND : ' CODE-STK           00120003
+001300              WHEN OTHER                                          00130001
+001310                   DISPLAY ' ERROR READ - FS-STK : ' FS-STK       00131001
+001320     END-EVALUATE                                                 00132001
+001321                                                                  00132104
+001330     CLOSE STK                                                    00133004
+001331                                                                  00133104
+001340     GOBACK.                                                      00134001
+001428                                                                  00142801

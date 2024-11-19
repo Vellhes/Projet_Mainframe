@@ -1,0 +1,368 @@
+000100 IDENTIFICATION DIVISION.                                         00010000
+000200 PROGRAM-ID. PROJP3.                                              00020000
+000300*****************************************                         00030000
+000400 ENVIRONMENT DIVISION.                                            00040000
+000500 CONFIGURATION SECTION.                                           00050000
+000600 SPECIAL-NAMES.                                                   00060000
+000700     DECIMAL-POINT IS COMMA.                                      00070000
+000800                                                                  00080000
+000900 INPUT-OUTPUT SECTION.                                            00090000
+001000 FILE-CONTROL.                                                    00100000
+001100        SELECT EXT  ASSIGN TO EXTRACT.                            00110099
+001102        SELECT PROJ ASSIGN TO PROJET.                             00110218
+001103*****************************************                         00110318
+001104 DATA DIVISION.                                                   00110418
+001105 FILE SECTION.                                                    00110518
+001719                                                                  00171918
+001720 FD EXT.                                                          00172099
+001721 01 ENR-EXT.                                                      00172199
+001722    05 NUM-ORDER-EXT   PIC 9(3).                                  00172299
+001723    05 DATE-ORDER-EXT  PIC X(10).                                 00172399
+001724    05 COMPANY-EXT     PIC X(30).                                 00172499
+001725    05 ADDR-EXT        PIC X(30).                                 00172599
+001726    05 CITY-EXT        PIC X(20).                                 00172699
+001727    05 ZIP-EXT         PIC X(5).                                  00172799
+001728    05 STATE-EXT       PIC X(2).                                  00172899
+001729    05 DNAME-EXT       PIC X(15).                                 00172999
+001730    05 LNAME-EXT       PIC X(15).                                 00173099
+001731    05 FNAME-EXT       PIC X(15).                                 00173199
+001732    05 COM-EXT         PIC 9(2)V9(2).                             00173299
+001733    05 NUM-PROD-EXT    PIC X(3).                                  00173399
+001734    05 DESC-EXT        PIC X(25).                                 00173499
+001735    05 QUANTITY-EXT    PIC 9(2).                                  00173599
+001736    05 PRICE-EXT       PIC 9(3)V9(2).                             00173699
+001741                                                                  00174199
+001742 FD PROJ.                                                         00174299
+001743 01 ENR-PROJ PIC X(80).                                           00174399
+001744                                                                  00174499
+001745 WORKING-STORAGE SECTION.                                         00174599
+001771                                                                  00177199
+001772**************************************************************    00177299
+001773*               DECLARATION DES LIGNES D'EDITION                  00177399
+001774**************************************************************    00177499
+001775                                                                  00177599
+001776 01 L-STAR     PIC X(80) VALUE ALL '*'.                           00177699
+001777                                                                  00177799
+001778 01 L-RETURN   PIC X(80) VALUE ALL SPACE.                         00177899
+001779                                                                  00177999
+001780                                                                  00178099
+001781 01 L-EMPTY.                                                      00178199
+001782    05 FILLER  PIC X VALUE '*'.                                   00178299
+001783    05 FILLER  PIC X(78) VALUE ALL SPACE.                         00178399
+001784    05 FILLER  PIC X VALUE '*'.                                   00178499
+001785                                                                  00178599
+001786 01 L-STAR-TAB.                                                   00178699
+001790   05 FILLER        PIC X(4)  VALUE '*  *'.                       00179033
+001791   05 FILLER        PIC X(72) VALUE ALL '*'.                      00179118
+001792   05 FILLER        PIC X(4)  VALUE '*  *'.                       00179233
+001793                                                                  00179320
+001794 01 L-COMP-STAR.                                                  00179499
+001795   05 FILLER        PIC X      VALUE '*'.                         00179533
+001796   05 FILLER        PIC X(40)  VALUE ALL SPACE.                   00179633
+001797   05 FILLER        PIC X(36)  VALUE ALL '*'.                     00179733
+001798   05 FILLER        PIC X(2)   VALUE ALL SPACE.                   00179833
+001799   05 FILLER        PIC X      VALUE '*'.                         00179933
+001800                                                                  00180033
+001801 01 L-COMP.                                                       00180133
+001802   05 FILLER        PIC X      VALUE '*'.                         00180233
+001803   05 FILLER        PIC X(40)  VALUE ALL SPACE.                   00180333
+001804   05 FILLER        PIC X(3)   VALUE  '*  '.                      00180433
+001805   05 COMPANY       PIC X(30).                                    00180533
+001806   05 FILLER        PIC X(4)   VALUE '  * '.                      00180633
+001807   05 FILLER        PIC X(2)   VALUE ' *'.                        00180734
+001812                                                                  00181225
+001813 01 L-ADDR.                                                       00181325
+001820   05 FILLER        PIC X      VALUE '*'.                         00182033
+001821   05 FILLER        PIC X(40)  VALUE ALL SPACE.                   00182133
+001830   05 FILLER        PIC X(3)   VALUE  '*  '.                      00183018
+001840   05 ADDR          PIC X(30).                                    00184018
+001850   05 FILLER        PIC X(4)   VALUE '  * '.                      00185018
+001860   05 FILLER        PIC X(2)   VALUE ' *'.                        00186033
+001870                                                                  00187018
+001880 01 L-CITY.                                                       00188018
+001890   05 FILLER        PIC X      VALUE '*'.                         00189033
+001891   05 FILLER        PIC X(40)  VALUE ALL SPACE.                   00189135
+001892   05 FILLER        PIC X(3)   VALUE  '*  '.                      00189233
+001893   05 CITY          PIC X(20).                                    00189333
+001894   05 FILLER        PIC X      VALUE ','.                         00189433
+001895   05 ZIP           PIC X(5).                                     00189533
+001896   05 FILLER        PIC X(8)   VALUE '      *'.                   00189633
+001897   05 FILLER        PIC X(2)   VALUE ' *'.                        00189735
+001898                                                                  00189833
+001899 01 L-STATE.                                                      00189933
+001900   05 FILLER        PIC X      VALUE '*'.                         00190033
+001901   05 FILLER        PIC X(40)  VALUE ALL SPACE.                   00190133
+001902   05 FILLER        PIC X(3)   VALUE  '*  '.                      00190233
+001903   05 STATE         PIC X(30).                                    00190333
+001904   05 FILLER        PIC X(4)   VALUE '  * '.                      00190433
+001905   05 FILLER        PIC X(2)   VALUE ' *'.                        00190533
+001906                                                                  00190633
+001907 01 L-LOC.                                                        00190733
+002300   05 FILLER     PIC X      VALUE '*'.                            00230033
+002301   05 FILLER     PIC X(5)   VALUE ALL SPACE.                      00230133
+002302   05 CITY-LOC   PIC X(20).                                       00230233
+002303   05 FILLER     PIC X(4)   VALUE ',LE '.                         00230333
+002304   05 DAYS       PIC X(8).                                        00230433
+002305   05 FILLER     PIC X      VALUE SPACE.                          00230533
+002306   05 NUMB-DAY   PIC X(2).                                        00230620
+002307   05 FILLER     PIC X      VALUE SPACE.                          00230733
+002308   05 MONTH      PIC X(8).                                        00230820
+002309   05 FILLER     PIC X      VALUE SPACE.                          00230933
+002310   05 YEAR       PIC X(4).                                        00231020
+002311   05 FILLER     PIC X(24)  VALUE ALL SPACE.                      00231133
+002312   05 FILLER     PIC X      VALUE '*'.                            00231233
+002313                                                                  00231333
+002314 01 L-ORDER.                                                      00231433
+002315   05 FILLER     PIC X(4)  VALUE '*   '.                          00231533
+002316   05 NUM-ORDER  PIC 9(3).                                        00231633
+002317   05 FILLER     PIC X(72) VALUE ALL SPACE.                       00231733
+002318   05 FILLER     PIC X     VALUE '*'.                             00231833
+002319                                                                  00231933
+002320 01 L-DATE.                                                       00232033
+002321   05 FILLER     PIC X(4)   VALUE '*   '.                         00232133
+002322   05 DATE-ORDER PIC X(10).                                       00232233
+002323   05 FILLER     PIC X(65)  VALUE ALL SPACE.                      00232333
+002324   05 FILLER     PIC X      VALUE '*'.                            00232433
+002325                                                                  00232533
+002326 01 L-CONTACT.                                                    00232633
+002327   05 FILLER     PIC X(2)   VALUE '* '.                           00232733
+002328   05 FILLER     PIC X(30)  VALUE 'VOTRE CONTACT AU DEPARTEMENT '.00232833
+002329   05 DNAME      PIC X(15).                                       00232933
+002330   05 FILLER     PIC X(2)   VALUE ': '.                           00233033
+002331   05 LNAME      PIC X(15).                                       00233133
+002332   05 FNAME      PIC X(15).                                       00233233
+002333   05 FILLER     PIC X      VALUE '*'.                            00233333
+002334                                                                  00233433
+002335 01 L-HEADER.                                                     00233533
+002336     05 FILLER PIC X(80) VALUE '*  *   P_NO       DESCRIPTION     00233699
+002337-    '     QUANTITY    PRICE     TOTAL LIGNE    *  *'.            00233799
+002338                                                                  00233833
+002344 01 L-LINE.                                                       00234499
+002345   05 FILLER        PIC X(8)  VALUE '*  *    '.                   00234533
+002346   05 PNO           PIC X(3).                                     00234633
+002347   05 FILLER        PIC X(5)  VALUE ALL SPACE.                    00234799
+002348   05 DESC          PIC X(25).                                    00234899
+002349   05 FILLER        PIC X    VALUE ALL SPACE.                     00234999
+002350   05 QUANTITY      PIC Z9.                                       00235099
+002351   05 FILLER        PIC X(6) VALUE ALL SPACE.                     00235199
+002352   05 PRICE         PIC ZZ9,99.                                   00235299
+002353   05 FILLER        PIC X(6) VALUE ALL SPACE.                     00235399
+002354   05 PRICE-TOT     PIC ZZ9,99.                                   00235499
+002355   05 FILLER        PIC X(8) VALUE ALL SPACE.                     00235599
+002356   05 FILLER        PIC X(4) VALUE '*  *'.                        00235699
+002357                                                                  00235799
+002358 01 L-TOTAL-HT.                                                   00235899
+002359   05 FILLER        PIC X      VALUE '*'.                         00235999
+002360   05 FILLER        PIC X(43)  VALUE ALL SPACE.                   00236099
+002361   05 FILLER        PIC X(8)   VALUE 'TOTAL HT'.                  00236199
+002362   05 TOT-HT        PIC ZZZ9,99.                                  00236299
+002363   05 FILLER        PIC X(20)   VALUE ALL SPACE.                  00236399
+002364   05 FILLER        PIC X       VALUE '*'.                        00236499
+002365                                                                  00236599
+002366 01 L-MONT-TVA.                                                   00236699
+002367   05 FILLER        PIC X       VALUE '*'.                        00236799
+002368   05 FILLER        PIC X(43)   VALUE ALL SPACE.                  00236899
+002369   05 FILLER        PIC X(10)   VALUE 'MONT TVA ('.               00236999
+002370   05 TVA           PIC Z9,99.                                    00237099
+002371   05 FILLER        PIC X(2)    VALUE '%)'.                       00237199
+002372   05 FILLER        PIC X(18)   VALUE ALL SPACE.                  00237299
+002373   05 FILLER        PIC X       VALUE '*'.                        00237399
+002374                                                                  00237499
+002375                                                                  00237599
+002376 01 L-COMMISSION.                                                 00237699
+002377   05 FILLER        PIC X       VALUE '*'.                        00237799
+002378   05 FILLER        PIC X(43)   VALUE ALL SPACE.                  00237899
+002379   05 FILLER        PIC X(12)   VALUE 'COMMISSION ('.             00237999
+002381   05 TX-COM        PIC Z9,99.                                    00238199
+002382   05 FILLER        PIC X(2)    VALUE '%)'.                       00238299
+002383   05 COMM          PIC Z9,99.                                    00238399
+002384   05 FILLER        PIC X(11)   VALUE ALL SPACE.                  00238499
+002385   05 FILLER        PIC X       VALUE '*'.                        00238599
+002386                                                                  00238699
+002387 01 L-TOTAL-TTC.                                                  00238799
+002388   05 FILLER        PIC X       VALUE '*'.                        00238899
+002389   05 FILLER        PIC X(43)   VALUE ALL SPACE.                  00238999
+002390   05 FILLER        PIC X(9)    VALUE 'TOTAL TTC'.                00239099
+002391   05 TOT-TTC       PIC ZZZ9,99.                                  00239199
+002392   05 FILLER        PIC X(19)   VALUE ALL SPACE.                  00239299
+002400   05 FILLER        PIC X       VALUE '*'.                        00240033
+002415                                                                  00241525
+002416******************************************************************00241625
+002417                                                                  00241725
+002418 77 WS-FLAG-EXT     PIC 9            VALUE ZERO.                  00241899
+002420 77 WS-CURR-ORD     PIC X(4).                                     00242099
+002425 77 WS-BEGIN        PIC 9            VALUE 1  .                   00242599
+002433                                                                  00243399
+002436 77 WS-TOTLINE      PIC 9(3)V9(2)    VALUE 0.                     00243699
+002437 77 WS-TOTHT        PIC 9(4)V9(2)    VALUE 0.                     00243799
+002438 77 WS-TX-COMM      PIC 9(2)V9(2).                                00243899
+002439 77 WS-COMM         PIC 9(2)V9(2).                                00243999
+002440                                                                  00244099
+002441 77 MONTTVA         PIC 9(2)V9(2)    VALUE 90.                    00244199
+002442 77 WS-TX-TVA       PIC 9V9(4).                                   00244299
+002443                                                                  00244399
+002444 01 SSPROG1 PIC X(6) VALUE 'FTDATE'.                              00244499
+002445 01 SSPROG2 PIC X(5) VALUE 'STATE'.                               00244599
+002446                                                                  00244699
+002451 PROCEDURE DIVISION.                                              00245199
+002456                                                                  00245699
+002457*    GETTING TVA FROM SYSIN                                       00245799
+002458     ACCEPT MONTTVA FROM SYSIN                                    00245899
+002459     MOVE MONTTVA TO TVA                                          00245999
+002460                                                                  00246099
+002461     PERFORM OPEN-FILES                                           00246199
+002462                                                                  00246299
+002463     PERFORM READ-EXT                                             00246399
+002465                                                                  00246599
+002466     PERFORM UNTIL WS-FLAG-EXT = 1                                00246699
+002468               MOVE NUM-ORDER-EXT TO WS-CURR-ORD                  00246899
+002469               PERFORM ANALYSE                                    00246999
+002470               PERFORM READ-EXT                                   00247099
+002476                                                                  00247699
+002477         IF WS-CURR-ORD NOT EQUAL NUM-ORDER-EXT OR WS-FLAG-EXT = 100247799
+002480               PERFORM FOOTER                                     00248099
+002484               MOVE 1 TO WS-BEGIN                                 00248499
+002486         END-IF                                                   00248699
+002490     END-PERFORM                                                  00249099
+002491                                                                  00249199
+002500     PERFORM CLOSE-FILES                                          00250099
+002530                                                                  00253026
+003232     GOBACK.                                                      00323226
+003264                                                                  00326499
+003265 READ-EXT.                                                        00326599
+003266     READ EXT AT END                                              00326699
+003267       MOVE 1 TO WS-FLAG-EXT                                      00326799
+003268     END-READ                                                     00326899
+003269     .                                                            00326999
+003270                                                                  00327099
+003271 OPEN-FILES.                                                      00327199
+003272     OPEN INPUT EXT                                               00327299
+003273          OUTPUT PROJ                                             00327399
+003274     .                                                            00327499
+003275                                                                  00327599
+003276 CLOSE-FILES.                                                     00327699
+003277     CLOSE EXT PROJ                                               00327799
+003278     .                                                            00327899
+003279                                                                  00327999
+003280 ANALYSE.                                                         00328099
+003281     IF WS-BEGIN = 1                                              00328199
+003283        PERFORM CHANGE-ORDER-EXT                                  00328399
+003284        PERFORM LOAD-COMPANY-INFOS                                00328499
+003285        PERFORM LOAD-DATE-INFOS                                   00328599
+003286        PERFORM LOAD-CONTACT-INFOS                                00328699
+003287        PERFORM HEADER                                            00328799
+003288     END-IF                                                       00328899
+003289                                                                  00328999
+003290     PERFORM LOAD-PRODUCTS-INFOS                                  00329099
+003291     WRITE ENR-PROJ FROM L-LINE                                   00329199
+003294     .                                                            00329499
+003295                                                                  00329599
+003296 CHANGE-ORDER-EXT.                                                00329699
+003297     MOVE NUM-ORDER-EXT TO NUM-ORDER                              00329799
+003298     MOVE 0 TO WS-BEGIN                                           00329899
+003299     .                                                            00329999
+003300                                                                  00330099
+003301***************************************************************   00330199
+003302* GETTING COMPANY INFORMATIONS ( CITY, ADDRESS, ZIP AND STATE )   00330299
+003303***************************************************************   00330399
+003304 LOAD-COMPANY-INFOS.                                              00330499
+003305        MOVE CITY-EXT    TO CITY-LOC                              00330599
+003306        MOVE ADDR-EXT    TO ADDR                                  00330699
+003307        MOVE COMPANY-EXT TO COMPANY                               00330799
+003308        MOVE ZIP-EXT     TO ZIP                                   00330899
+003309                                                                  00330999
+003310        MOVE CITY-EXT    TO CITY                                  00331099
+003311                                                                  00331199
+003312*  CALLING SUB-PROG STATE TO CHANGE STATE ABV TO FULL-TEXT STATE  00331299
+003313        CALL SSPROG2 USING STATE-EXT STATE                        00331399
+003314     .                                                            00331499
+003315                                                                  00331599
+003316***************************************************************   00331699
+003317* GETTING DATE INFORMATIONS IN FULL LETTERS (DAY, MONTH, YEAR)    00331799
+003318***************************************************************   00331899
+003319 LOAD-DATE-INFOS.                                                 00331999
+003320     MOVE DATE-ORDER-EXT TO DATE-ORDER                            00332099
+003321                                                                  00332199
+003322*  CALLING SUB-PROG FTDATE TO GET DATE IN FULL LETTERS            00332299
+003323     CALL SSPROG1 USING NUMB-DAY DAYS MONTH YEAR DATE-ORDER       00332399
+003324     .                                                            00332499
+003325                                                                  00332599
+003326***************************************************************   00332699
+003327* GETTING CONTACT INFORMATIONS ( LAST NAME, FIRST NAME AND        00332799
+003328*                                DEPARTMENT NAME )                00332899
+003329***************************************************************   00332999
+003330 LOAD-CONTACT-INFOS.                                              00333099
+003331     MOVE LNAME-EXT   TO LNAME                                    00333199
+003332     MOVE FNAME-EXT   TO FNAME                                    00333299
+003333     MOVE DNAME-EXT   TO DNAME                                    00333399
+003334     .                                                            00333499
+003335                                                                  00333599
+003336***************************************************************   00333699
+003337* GETTING PRODUCTS INFORMATIONS ( PRODUCT NUMBER, DESCRIPTION,    00333799
+003338*                                 PRICE AND QUANTITY )            00333899
+003339* ALSO CALCULATE THE TOTAL FOR A LINE AND THE TOTAL HT            00333999
+003340***************************************************************   00334099
+003341 LOAD-PRODUCTS-INFOS.                                             00334199
+003342     MOVE NUM-PROD-EXT TO PNO                                     00334299
+003343     MOVE DESC-EXT     TO DESC                                    00334399
+003344     MOVE PRICE-EXT TO PRICE                                      00334499
+003345     MOVE QUANTITY-EXT TO QUANTITY                                00334599
+003346                                                                  00334699
+003347     COMPUTE WS-TOTLINE = PRICE-EXT * QUANTITY-EXT                00334799
+003348     COMPUTE PRICE-TOT =  WS-TOTLINE                              00334899
+003349     COMPUTE WS-TOTHT  =  WS-TOTHT  + WS-TOTLINE                  00334999
+003350     MOVE 0 TO WS-TOTLINE                                         00335099
+003351     .                                                            00335199
+003360                                                                  00336099
+003430 HEADER.                                                          00343099
+003450     WRITE ENR-PROJ FROM L-STAR                                   00345099
+003460     WRITE ENR-PROJ FROM L-EMPTY                                  00346099
+003470     WRITE ENR-PROJ FROM L-COMP-STAR                              00347099
+003480     WRITE ENR-PROJ FROM L-COMP                                   00348099
+003490     WRITE ENR-PROJ FROM L-ADDR                                   00349099
+003491     WRITE ENR-PROJ FROM L-CITY                                   00349199
+003492     WRITE ENR-PROJ FROM L-STATE                                  00349299
+003493     WRITE ENR-PROJ FROM L-COMP-STAR                              00349399
+003494     WRITE ENR-PROJ FROM L-LOC                                    00349499
+003495     WRITE ENR-PROJ FROM L-EMPTY                                  00349599
+003496     WRITE ENR-PROJ FROM L-ORDER                                  00349699
+003497     WRITE ENR-PROJ FROM L-DATE                                   00349799
+003498     WRITE ENR-PROJ FROM L-EMPTY                                  00349899
+003499     WRITE ENR-PROJ FROM L-CONTACT                                00349999
+003500     WRITE ENR-PROJ FROM L-EMPTY                                  00350099
+003501     WRITE ENR-PROJ FROM L-STAR-TAB                               00350199
+003502     WRITE ENR-PROJ FROM L-HEADER                                 00350299
+003503     .                                                            00350399
+003504                                                                  00350499
+003505 FOOTER.                                                          00350599
+003507     PERFORM ANALYSE-FOOTER                                       00350799
+003508                                                                  00350899
+003509     WRITE ENR-PROJ FROM L-STAR-TAB                               00350999
+003510     WRITE ENR-PROJ FROM L-EMPTY                                  00351099
+003511     WRITE ENR-PROJ FROM L-TOTAL-HT                               00351199
+003512     WRITE ENR-PROJ FROM L-EMPTY                                  00351299
+003513     WRITE ENR-PROJ FROM L-MONT-TVA                               00351399
+003514     WRITE ENR-PROJ FROM L-EMPTY                                  00351499
+003515     WRITE ENR-PROJ FROM L-COMMISSION                             00351599
+003516     WRITE ENR-PROJ FROM L-EMPTY                                  00351699
+003517     WRITE ENR-PROJ FROM L-TOTAL-TTC                              00351799
+003518     WRITE ENR-PROJ FROM L-EMPTY                                  00351899
+003519     WRITE ENR-PROJ FROM L-STAR                                   00351999
+003520     WRITE ENR-PROJ FROM L-RETURN AFTER ADVANCING PAGE            00352099
+003521     .                                                            00352199
+003522                                                                  00352299
+003523***************************************************************   00352399
+003524* CALCULATES THE TVA, COMMISSION AND THE TOTAL TTC                00352499
+003525***************************************************************   00352599
+003526 ANALYSE-FOOTER.                                                  00352699
+003527     MOVE COM-EXT TO TX-COM                                       00352799
+003528     MOVE WS-TOTHT TO TOT-HT                                      00352899
+003529     COMPUTE WS-COMM = WS-TOTHT * COM-EXT                         00352999
+003530     COMPUTE COMM = WS-COMM                                       00353099
+003531     COMPUTE WS-TX-TVA = MONTTVA / 100                            00353199
+003532                                                                  00353299
+003533     COMPUTE TOT-TTC = WS-TOTHT * WS-TX-TVA - WS-COMM             00353399
+003534     MOVE 0 TO WS-TOTHT                                           00353499
+003535                                                                  00353599
+003536     .                                                            00353699
+003537                                                                  00353799

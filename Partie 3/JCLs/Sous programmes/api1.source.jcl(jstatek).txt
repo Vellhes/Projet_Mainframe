@@ -1,0 +1,39 @@
+//JSTATK JOB (ACCT#),'ALAN',CLASS=A,MSGCLASS=H,
+//    MSGLEVEL=(1,1),NOTIFY=&SYSUID,COND=(8,LT)
+//********************************************************
+//* SI 8 < RC, ON ABANDONNE LE JOB                       *
+//********************************************************
+//RAZ      EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DELETE API1.PROJET.STATE.KSDS
+/*
+//********************************************************
+//*TRI FICHIER KSDS
+//*******************************************************
+//TRISTATE EXEC PGM=SORT
+//SYSOUT   DD SYSOUT=*
+//SORTIN   DD DSN=API1.PROJET.STATE.DATA,DISP=SHR
+//SORTWORK DD DSN=&&TEMP,DISP=(NEW,PASS)
+//SORTOUT  DD DSN=API1.PROJET.STATE.DATA,DISP=OLD
+//SYSIN    DD *
+     SORT FIELDS=(1,2,CH,A)
+/*
+//***********************************************************
+//CREEMPK  EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DEFINE CLUSTER (NAME(API1.PROJET.STATE.KSDS)      -
+                     VOLUME(APIWK2)                -
+                     TRACKS(1 1)                   -
+                     FREESPACE(20 20)              -
+                     KEYS(2 0)                     -
+                     RECORDSIZE(22 22)           -
+                     INDEXED)                      -
+           DATA   (NAME(API1.PROJET.STATE.KSDS.D))  -
+          INDEX   (NAME(API1.PROJET.STATE.KSDS.I))
+          REPRO INDATASET(API1.PROJET.STATE.DATA) -
+                OUTDATASET(API1.PROJET.STATE.KSDS)
+          PRINT INDATASET(API1.PROJET.STATE.DATA) CHAR
+          PRINT INDATASET(API1.PROJET.STATE.KSDS) CHAR
+/*

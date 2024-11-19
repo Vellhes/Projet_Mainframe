@@ -1,0 +1,97 @@
+000100 IDENTIFICATION DIVISION.                                         00010000
+000200 PROGRAM-ID. FTDATE.                                              00020000
+000300*****************************************                         00030000
+000400 ENVIRONMENT DIVISION.                                            00040000
+000500 CONFIGURATION SECTION.                                           00050000
+000600 SPECIAL-NAMES.                                                   00060000
+000700     DECIMAL-POINT IS COMMA.                                      00070000
+000710                                                                  00071000
+000720 DATA DIVISION.                                                   00072000
+000730 WORKING-STORAGE SECTION.                                         00073000
+000771 77 DATE-STR     PIC X(8).                                        00077105
+000772 77 DATE-INT     PIC 9(8).                                        00077205
+000773 77 RES-DATE     PIC S9(08).                                      00077305
+000774 77 WS-QUOTIENT  PIC S9(04).                                      00077405
+000775 77 WS-REMAINDER PIC S9(04).                                      00077505
+000778                                                                  00077805
+000779 LINKAGE SECTION.                                                 00077905
+000780 77 NUMB-DAY  PIC X(2).                                           00078005
+000781 77 DAYS      PIC X(8).                                           00078105
+000782 77 MONTH     PIC X(8).                                           00078205
+000783 77 YEAR      PIC X(4).                                           00078305
+000784 77 FULL-DATE PIC X(10).                                          00078405
+000785                                                                  00078505
+000786 PROCEDURE DIVISION USING NUMB-DAY DAYS MONTH YEAR FULL-DATE.     00078605
+000787                                                                  00078705
+000797*    NUMBER OF DAY, NUMBER OF MONTH AND YEAR                      00079711
+000798                                                                  00079811
+000799     MOVE FULL-DATE(1:2) TO NUMB-DAY                              00079911
+000800     MOVE FULL-DATE(4:2) TO MONTH                                 00080011
+000801     MOVE FULL-DATE(7:4) TO YEAR                                  00080111
+000802                                                                  00080211
+000810*    DAY IN LETTER                                                00081011
+000900                                                                  00090008
+000910     STRING                                                       00091008
+000920         FULL-DATE(7:4) DELIMITED BY SIZE                         00092008
+000930         FULL-DATE(4:2) DELIMITED BY SIZE                         00093008
+000940         FULL-DATE(1:2) DELIMITED BY SIZE                         00094008
+001000         INTO DATE-STR                                            00100008
+001010                                                                  00101011
+001200     MOVE DATE-STR TO DATE-INT                                    00120008
+001220                                                                  00122011
+001300     COMPUTE RES-DATE = FUNCTION INTEGER-OF-DATE(DATE-INT)        00130008
+001310     DIVIDE  RES-DATE BY 7 GIVING WS-QUOTIENT                     00131008
+001320     REMAINDER WS-REMAINDER                                       00132008
+001330                                                                  00133008
+001340     EVALUATE WS-REMAINDER                                        00134008
+001350              WHEN 0                                              00135008
+001360                   MOVE 'DIMANCHE' TO DAYS                        00136008
+001361              WHEN 1                                              00136108
+001362                   MOVE 'LUNDI'    TO DAYS                        00136208
+001363              WHEN 2                                              00136308
+001364                   MOVE 'MARDI'    TO DAYS                        00136408
+001365              WHEN 3                                              00136508
+001366                   MOVE 'MERCREDI' TO DAYS                        00136608
+001367              WHEN 4                                              00136708
+001368                   MOVE 'JEUDI'    TO DAYS                        00136808
+001369              WHEN 5                                              00136908
+001370                   MOVE 'VENDREDI' TO DAYS                        00137008
+001371              WHEN 6                                              00137108
+001372                   MOVE 'SAMEDI'   TO DAYS                        00137208
+001373     END-EVALUATE                                                 00137308
+001374                                                                  00137408
+001375*    MONTH IN LETTER                                              00137509
+001376                                                                  00137608
+001377                                                                  00137708
+001378     EVALUATE MONTH                                               00137808
+001379              WHEN '01'                                           00137908
+001380                   MOVE 'JANVIER'   TO MONTH                      00138008
+001381              WHEN '02'                                           00138108
+001382                   MOVE 'FEVRIER'   TO MONTH                      00138208
+001383              WHEN '03'                                           00138308
+001384                   MOVE 'MARS'      TO MONTH                      00138408
+001385              WHEN '04'                                           00138508
+001386                   MOVE 'AVRIL'     TO MONTH                      00138608
+001387              WHEN '05'                                           00138708
+001388                   MOVE 'MAI'       TO MONTH                      00138808
+001389              WHEN '06'                                           00138908
+001390                   MOVE 'JUIN'      TO MONTH                      00139008
+001391              WHEN '07'                                           00139108
+001392                   MOVE 'JUILLET'   TO MONTH                      00139208
+001393              WHEN '08'                                           00139308
+001394                   MOVE 'AOUT'      TO MONTH                      00139408
+001395              WHEN '09'                                           00139508
+001396                   MOVE 'SEPTEMBRE' TO MONTH                      00139608
+001397              WHEN '10'                                           00139708
+001398                   MOVE 'OCTOBRE'   TO MONTH                      00139808
+001399              WHEN '11'                                           00139908
+001400                   MOVE 'NOVEMBRE'  TO MONTH                      00140008
+001401              WHEN '12'                                           00140108
+001402                   MOVE 'DECEMBRE'  TO MONTH                      00140208
+001403     END-EVALUATE                                                 00140308
+001418                                                                  00141808
+001419     GOBACK.                                                      00141908
+001420                                                                  00142006
+001430                                                                  00143006
+001500                                                                  00150000
+001600                                                                  00160000

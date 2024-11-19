@@ -1,0 +1,18 @@
+//CRETFAC  JOB (ACCT#),'ALAN',CLASS=A,MSGCLASS=H,
+//    MSGLEVEL=(1,1),NOTIFY=&SYSUID,COND=(8,LT)
+//**********************************************
+//*  OBJECTIF  : SUPPRIMER LE FICHIER DATA
+//**********************************************
+//STEP1    EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DELETE API1.PROJET.FACTURES.DATA
+/*
+//**********************************************
+//*  OBJECTIF  : CREER LE FICHIER API1.PROJET.FACTURES.DATA
+//**********************************************
+//STEP2    EXEC PGM=IEFBR14
+//CREATE   DD DSN=API1.PROJET.FACTURES.DATA,
+//            DISP=(NEW,CATLG,CATLG),
+//            SPACE=(TRK,(3,2),RLSE),
+//            DCB=(LRECL=81,RECFM=FB,BLKSIZE=810)
