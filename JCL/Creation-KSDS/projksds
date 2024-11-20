@@ -1,0 +1,73 @@
+//PROJKSDS JOB (ACCT#),'LUCAS',CLASS=A,MSGCLASS=H,                      00010002
+//      MSGLEVEL=(1,1),NOTIFY=$SYSUID,COND=(8,LT)                       00020000
+//****                                                                  00030000
+//* COND(4,LT) => SI 4 < AU RC D'UNE ETAPE = CANCEL LE JOB              00031000
+//****                                                                  00032000
+//****                                                                  00033000
+//* SUPPRIMER LE FICHIER KSDS                                           00033100
+//****                                                                  00033200
+//DELCHK   EXEC PGM=IDCAMS                                              00033302
+//SYSPRINT DD SYSOUT=*                                                  00033400
+//SYSIN    DD *                                                         00033500
+  DELETE API8.AJC.CHANGE.KSDS                                           00033600
+/*                                                                      00033700
+//****                                                                  00033800
+//* CREER UN FICHIER VSAM KSDS A PARTIR DE API8.AJC.PROJET.CHANGE       00033900
+//****                                                                  00034000
+//CREECHK  EXEC PGM=IDCAMS                                              00035002
+//SYSPRINT DD SYSOUT=*                                                  00036000
+//SYSIN    DD *                                                         00037000
+  DEFINE CLUSTER (NAME(API8.AJC.CHANGE.KSDS)    -                       00038001
+                     VOLUME(APIWK2)             -                       00039000
+                     TRACKS(3 1)                -                       00040000
+                     FREESPACE(20 20)           -                       00050000
+                     KEYS(2 0)                  -                       00060000
+                     RECORDSIZE(6 6)            -                       00070001
+                     INDEXED)                   -                       00080000
+         DATA   (NAME(API8.AJC.CHANGE.KSDS.D))  -                       00090001
+        INDEX   (NAME(API8.AJC.CHANGE.KSDS.I))                          00100000
+/*                                                                      00110000
+//COPIECHK EXEC PGM=IDCAMS                                              00120002
+//SYSPRINT DD SYSOUT=*                                                  00130000
+//DDIN     DD DSN=API8.AJC.PROJET.CHANGE,DISP=SHR                       00140000
+//DDOUT    DD DSN=API8.AJC.CHANGE.KSDS,DISP=SHR                         00150000
+//SYSIN    DD *                                                         00160000
+   REPRO INFILE(DDIN) -                                                 00170000
+         OUTFILE(DDOUT)                                                 00180000
+   PRINT INDATASET(API8.AJC.CHANGE.KSDS) CHAR                           00181000
+   PRINT INDATASET(API8.AJC.PROJET.CHANGE) CHAR                         00182000
+/*                                                                      00183000
+//*DELSTK   EXEC PGM=IDCAMS                                             00184003
+//*SYSPRINT DD SYSOUT=*                                                 00185003
+//*SYSIN    DD *                                                        00186003
+//*  DELETE API8.AJC.STATE.DATA                                         00187005
+//*                                                                     00188003
+//********************************************************              00189002
+//*TRI FICHIER KSDS                                                     00190002
+//*******************************************************               00200002
+//TRISTATE EXEC PGM=SORT                                                00210002
+//SYSOUT   DD SYSOUT=*                                                  00220002
+//SORTIN   DD DSN=API8.AJC.STATE.DATA,DISP=SHR                          00230005
+//SORTWORK DD DSN=&&TEMP,DISP=(NEW,PASS)                                00240002
+//SORTOUT  DD DSN=API8.AJC.STATE.DATA,DISP=OLD                          00250005
+//SYSIN    DD *                                                         00260002
+     SORT FIELDS=(1,2,CH,A)                                             00270002
+/*                                                                      00280002
+//***********************************************************           00290002
+//CREESTK  EXEC PGM=IDCAMS                                              00300002
+//SYSPRINT DD SYSOUT=*                                                  00310002
+//SYSIN    DD *                                                         00320002
+  DEFINE CLUSTER (NAME(API8.AJC.STATE.KSDS)      -                      00330005
+                     VOLUME(APIWK2)                -                    00340002
+                     TRACKS(1 1)                   -                    00350002
+                     FREESPACE(20 20)              -                    00360002
+                     KEYS(2 0)                     -                    00370002
+                     RECORDSIZE(22 22)           -                      00380002
+                     INDEXED)                      -                    00390002
+           DATA   (NAME(API8.AJC.STATE.KSDS.D))  -                      00400005
+          INDEX   (NAME(API8.AJC.STATE.KSDS.I))                         00410005
+          REPRO INDATASET(API8.AJC.STATE.DATA) -                        00420005
+                OUTDATASET(API8.AJC.STATE.KSDS)                         00430005
+          PRINT INDATASET(API8.AJC.STATE.DATA) CHAR                     00440005
+          PRINT INDATASET(API8.AJC.STATE.KSDS) CHAR                     00450005
+/*                                                                      00460002
