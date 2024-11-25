@@ -45,7 +45,7 @@
 001898                                                                  00189801
 001899 01 LINE-PROLOGUE.                                                00189936
 001900    05 FILLER PIC X(68) VALUE                                     00190036
-001901    '<?XML VERSION = "1.0" ENCODING="UTF-8" STANDALONE="YES" ?>'. 00190136
+001901    '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>'.   00190136
 001902    05 FILLER PIC X(12) VALUE ALL SPACE.                          00190236
 001903                                                                  00190336
 001904 01 LINE-VENTES-START.                                            00190436
