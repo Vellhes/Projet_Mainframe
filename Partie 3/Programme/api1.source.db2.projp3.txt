@@ -262,57 +262,61 @@
 003298     MOVE 0 TO WS-BEGIN                                           00329899
 003299     .                                                            00329999
 003300                                                                  00330099
-003301***************************************************************   00330199
-003302* GETTING COMPANY INFORMATIONS ( CITY, ADDRESS, ZIP AND STATE )   00330299
-003303***************************************************************   00330399
-003304 LOAD-COMPANY-INFOS.                                              00330499
-003305        MOVE CITY-EXT    TO CITY-LOC                              00330599
-003306        MOVE ADDR-EXT    TO ADDR                                  00330699
-003307        MOVE COMPANY-EXT TO COMPANY                               00330799
-003308        MOVE ZIP-EXT     TO ZIP                                   00330899
-003309                                                                  00330999
-003310        MOVE CITY-EXT    TO CITY                                  00331099
-003311                                                                  00331199
-003312*  CALLING SUB-PROG STATE TO CHANGE STATE ABV TO FULL-TEXT STATE  00331299
-003313        CALL SSPROG2 USING STATE-EXT STATE                        00331399
-003314     .                                                            00331499
-003315                                                                  00331599
-003316***************************************************************   00331699
-003317* GETTING DATE INFORMATIONS IN FULL LETTERS (DAY, MONTH, YEAR)    00331799
-003318***************************************************************   00331899
-003319 LOAD-DATE-INFOS.                                                 00331999
-003320     MOVE DATE-ORDER-EXT TO DATE-ORDER                            00332099
-003321                                                                  00332199
-003322*  CALLING SUB-PROG FTDATE TO GET DATE IN FULL LETTERS            00332299
-003323     CALL SSPROG1 USING NUMB-DAY DAYS MONTH YEAR DATE-ORDER       00332399
-003324     .                                                            00332499
-003325                                                                  00332599
-003326***************************************************************   00332699
-003327* GETTING CONTACT INFORMATIONS ( LAST NAME, FIRST NAME AND        00332799
-003328*                                DEPARTMENT NAME )                00332899
+003301                                                                  00330199
+003302                                                                  00330299
+003303                                                                  00330399
+003304***************************************************************   00330499
+003305* GETTING COMPANY INFORMATIONS ( CITY, ADDRESS, ZIP AND STATE )   00330599
+003306***************************************************************   00330699
+003307 LOAD-COMPANY-INFOS.                                              00330799
+003308        MOVE CITY-EXT    TO CITY-LOC                              00330899
+003309        MOVE ADDR-EXT    TO ADDR                                  00330999
+003310        MOVE COMPANY-EXT TO COMPANY                               00331099
+003311        MOVE ZIP-EXT     TO ZIP                                   00331199
+003312                                                                  00331299
+003313        MOVE CITY-EXT    TO CITY                                  00331399
+003314                                                                  00331499
+003315*  CALLING SUB-PROG STATE TO CHANGE STATE ABV TO FULL-TEXT STATE  00331599
+003316        CALL SSPROG2 USING STATE-EXT STATE                        00331699
+003317     .                                                            00331799
+003318                                                                  00331899
+003319***************************************************************   00331999
+003320* GETTING DATE INFORMATIONS IN FULL LETTERS (DAY, MONTH, YEAR)    00332099
+003321***************************************************************   00332199
+003322 LOAD-DATE-INFOS.                                                 00332299
+003323     MOVE DATE-ORDER-EXT TO DATE-ORDER                            00332399
+003324                                                                  00332499
+003325*  CALLING SUB-PROG FTDATE TO GET DATE IN FULL LETTERS            00332599
+003326     CALL SSPROG1 USING NUMB-DAY DAYS MONTH YEAR DATE-ORDER       00332699
+003327     .                                                            00332799
+003328                                                                  00332899
 003329***************************************************************   00332999
-003330 LOAD-CONTACT-INFOS.                                              00333099
-003331     MOVE LNAME-EXT   TO LNAME                                    00333199
-003332     MOVE FNAME-EXT   TO FNAME                                    00333299
-003333     MOVE DNAME-EXT   TO DNAME                                    00333399
-003334     .                                                            00333499
-003335                                                                  00333599
-003336***************************************************************   00333699
-003337* GETTING PRODUCTS INFORMATIONS ( PRODUCT NUMBER, DESCRIPTION,    00333799
-003338*                                 PRICE AND QUANTITY )            00333899
-003339* ALSO CALCULATE THE TOTAL FOR A LINE AND THE TOTAL HT            00333999
+003330* GETTING CONTACT INFORMATIONS ( LAST NAME, FIRST NAME AND        00333099
+003331*                                DEPARTMENT NAME )                00333199
+003332***************************************************************   00333299
+003333 LOAD-CONTACT-INFOS.                                              00333399
+003334     MOVE LNAME-EXT   TO LNAME                                    00333499
+003335     MOVE FNAME-EXT   TO FNAME                                    00333599
+003336     MOVE DNAME-EXT   TO DNAME                                    00333699
+003337     .                                                            00333799
+003338                                                                  00333899
+003339                                                                  00333999
 003340***************************************************************   00334099
-003341 LOAD-PRODUCTS-INFOS.                                             00334199
-003342     MOVE NUM-PROD-EXT TO PNO                                     00334299
-003343     MOVE DESC-EXT     TO DESC                                    00334399
-003344     MOVE PRICE-EXT TO PRICE                                      00334499
-003345     MOVE QUANTITY-EXT TO QUANTITY                                00334599
-003346                                                                  00334699
-003347     COMPUTE WS-TOTLINE = PRICE-EXT * QUANTITY-EXT                00334799
-003348     COMPUTE PRICE-TOT =  WS-TOTLINE                              00334899
-003349     COMPUTE WS-TOTHT  =  WS-TOTHT  + WS-TOTLINE                  00334999
-003350     MOVE 0 TO WS-TOTLINE                                         00335099
-003351     .                                                            00335199
+003341* GETTING PRODUCTS INFORMATIONS ( PRODUCT NUMBER, DESCRIPTION,    00334199
+003342*                                 PRICE AND QUANTITY )            00334299
+003343* ALSO CALCULATE THE TOTAL FOR A LINE AND THE TOTAL HT            00334399
+003344***************************************************************   00334499
+003345 LOAD-PRODUCTS-INFOS.                                             00334599
+003346     MOVE NUM-PROD-EXT TO PNO                                     00334699
+003347     MOVE DESC-EXT     TO DESC                                    00334799
+003348     MOVE PRICE-EXT TO PRICE                                      00334899
+003349     MOVE QUANTITY-EXT TO QUANTITY                                00334999
+003350                                                                  00335099
+003351     COMPUTE WS-TOTLINE = PRICE-EXT * QUANTITY-EXT                00335199
+003352     COMPUTE PRICE-TOT =  WS-TOTLINE                              00335299
+003353     COMPUTE WS-TOTHT  =  WS-TOTHT  + WS-TOTLINE                  00335399
+003354     MOVE 0 TO WS-TOTLINE                                         00335499
+003355     .                                                            00335599
 003360                                                                  00336099
 003430 HEADER.                                                          00343099
 003450     WRITE ENR-PROJ FROM L-STAR                                   00345099
@@ -359,7 +363,7 @@
 003528     MOVE WS-TOTHT TO TOT-HT                                      00352899
 003529     COMPUTE WS-COMM = WS-TOTHT * COM-EXT                         00352999
 003530     COMPUTE COMM = WS-COMM                                       00353099
-003531     COMPUTE WS-TX-TVA = MONTTVA / 100                            00353199
+003531     COMPUTE WS-TX-TVA = ( 100 - MONTTVA ) /100                   00353199
 003532                                                                  00353299
 003533     COMPUTE TOT-TTC = WS-TOTHT * WS-TX-TVA - WS-COMM             00353399
 003534     MOVE 0 TO WS-TOTHT                                           00353499
